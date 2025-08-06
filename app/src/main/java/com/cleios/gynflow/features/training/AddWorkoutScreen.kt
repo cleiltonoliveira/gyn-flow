@@ -45,6 +45,12 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import android.net.Uri
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import coil.compose.AsyncImage
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddWorkoutScreen(
@@ -138,7 +144,7 @@ fun AddWorkoutScreen(
                     exercise = exercise,
                     onNameChange = { viewModel.onExerciseNameChange(index, it) },
                     onObservationChange = { viewModel.onExerciseObservationChange(index, it) },
-                    onImageUrlChange = { viewModel.onExerciseImageUrlChange(index, it) },
+                    onImageSelected = { viewModel.onExerciseImageSelected(index, it) },
                     onRemove = { viewModel.removeExercise(index) }
                 )
             }
@@ -162,9 +168,16 @@ fun ExerciseCard(
     exercise: ExerciseInput,
     onNameChange: (String) -> Unit,
     onObservationChange: (String) -> Unit,
-    onImageUrlChange: (String) -> Unit,
-    onRemove: () -> Unit
+    onRemove: () -> Unit,
+    onImageSelected: (Uri) -> Unit,
 ) {
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri -> uri?.let { onImageSelected(it) } }
+    )
+
     Card(
         modifier = Modifier
             .padding(vertical = 8.dp)
@@ -186,12 +199,22 @@ fun ExerciseCard(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
-                value = exercise.imageUrl,
-                onValueChange = onImageUrlChange,
-                label = { Text("Image URL") },
+            if (exercise.localImageUri != null) {
+                AsyncImage(
+                    model = exercise.localImageUri,
+                    contentDescription = "Selected Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(vertical = 8.dp)
+                )
+            }
+            OutlinedButton(
+                onClick = { launcher.launch("image/*") },
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                Text("Select Image")
+            }
 
             Row(
                 horizontalArrangement = Arrangement.End,

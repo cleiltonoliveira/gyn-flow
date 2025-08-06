@@ -1,5 +1,6 @@
 package com.cleios.gynflow.features.training
 
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.cleios.gynflow.core.data.WorkoutRepository
 import com.cleios.gynflow.core.model.ExerciseInput
 import com.cleios.gynflow.core.model.Workout
+import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -72,6 +74,14 @@ class WorkoutViewModel @Inject constructor(
         if (index in updatedExercises.indices) {
             updatedExercises[index] = updatedExercises[index].copy(imageUrl = value)
             _uiState.update { it.copy(exercises = updatedExercises) }
+        }
+    }
+
+    fun onExerciseImageSelected(index: Int, uri: Uri) {
+        val updated = _uiState.value.exercises.toMutableList()
+        if (index in updated.indices) {
+            updated[index] = updated[index].copy(localImageUri = uri)
+            _uiState.update { it.copy(exercises = updated) }
         }
     }
 

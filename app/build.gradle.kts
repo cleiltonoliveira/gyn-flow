@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     implementation("androidx.compose.foundation:foundation:1.8.3")
 
