@@ -22,13 +22,18 @@ class HomeViewModel @Inject constructor(
     private val _workouts = mutableStateOf<List<Workout>>(emptyList())
     val workouts: State<List<Workout>> get() = _workouts
 
+    private val _isLoading = mutableStateOf(false)
+    val isLoading: State<Boolean> = _isLoading
+
     fun logout() {
         authService.logout()
     }
 
     fun loadWorkouts() {
+        _isLoading.value = true
         repository.getWorkouts {
             _workouts.value = it
+            _isLoading.value = false
         }
     }
 

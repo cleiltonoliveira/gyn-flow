@@ -17,7 +17,7 @@ class LoginViewModel @Inject constructor(
         private set
 
     fun login(email: String, password: String, onSuccess: () -> Unit) {
-            authService.login(email, password) { success, error ->
+        authService.login(email, password) { success, error ->
             if (success) {
                 errorMessage = null
                 onSuccess()
@@ -36,5 +36,13 @@ class LoginViewModel @Inject constructor(
                 errorMessage = error
             }
         }
+    }
+
+    fun setError(message: String) {
+        errorMessage = message
+    }
+
+    fun clearError() {
+        errorMessage = null
     }
 }

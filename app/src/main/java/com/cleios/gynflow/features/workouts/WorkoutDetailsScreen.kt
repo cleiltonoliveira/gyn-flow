@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Edit
 import coil.compose.AsyncImage
 import com.cleios.gynflow.core.model.ExerciseInput
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutDetailsScreen(
@@ -53,26 +52,36 @@ fun WorkoutDetailsScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(uiState.name, style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                uiState.name,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
 
-            Text("Description:", style = MaterialTheme.typography.titleSmall)
-            Text(uiState.description)
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text("Date:", style = MaterialTheme.typography.titleSmall)
-            Text(uiState.date?.let { dateFormatter.format(it) } ?: "Not selected")
+            DetailSection(title = "Description", content = uiState.description)
+            DetailSection(
+                title = "Date",
+                content = uiState.date?.let { dateFormatter.format(it) } ?: "Not selected"
+            )
+
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Exercises", style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "Exercises",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             if (uiState.exercises.isEmpty()) {
-                Text("No exercises added.")
+                Text("No exercises added.", style = MaterialTheme.typography.bodyMedium)
             } else {
                 uiState.exercises.forEach { exercise ->
                     ReadOnlyExerciseCard(exercise)
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -80,27 +89,55 @@ fun WorkoutDetailsScreen(
 }
 
 @Composable
+fun DetailSection(title: String, content: String) {
+    Column(Modifier.padding(bottom = 16.dp)) {
+        Text(
+            title,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            content,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Composable
 fun ReadOnlyExerciseCard(exercise: ExerciseInput) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        elevation = CardDefaults.cardElevation()
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        shape = MaterialTheme.shapes.medium
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Text(exercise.name, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(4.dp))
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                exercise.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+
             if (exercise.observations.isNotBlank()) {
-                Text("Observations: ${exercise.observations}")
-            }
-            if (exercise.imageUrl != null) {
                 Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    "Observations",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    exercise.observations,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (exercise.imageUrl != null) {
+                Spacer(modifier = Modifier.height(12.dp))
                 AsyncImage(
                     model = exercise.imageUrl,
                     contentDescription = "Exercise Image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp)
+                        .height(180.dp),
                 )
             }
         }

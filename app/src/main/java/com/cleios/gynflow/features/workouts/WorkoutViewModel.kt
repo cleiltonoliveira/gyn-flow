@@ -25,6 +25,8 @@ class WorkoutViewModel @Inject constructor(
     private val _validationState = MutableStateFlow(WorkoutFormValidation())
     val validationState: StateFlow<WorkoutFormValidation> = _validationState.asStateFlow()
 
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
     fun onNameChange(value: String) {
         _uiState.update { it.copy(name = value) }
@@ -78,12 +80,15 @@ class WorkoutViewModel @Inject constructor(
 
     fun saveWorkout(onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
-            if (!validateForm()) return@launch
+            _isSaving.value = true
             try {
+                if (!validateForm()) return@launch
                 repository.addWorkout(buildWorkoutFromState())
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Erro ao salvar o treino")
+            } finally {
+                _isSaving.value = false
             }
         }
     }
@@ -106,12 +111,15 @@ class WorkoutViewModel @Inject constructor(
 
     fun updateWorkout(onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
+            _isSaving.value = true
             if (!validateForm()) return@launch
             try {
                 repository.updateWorkout(buildWorkoutFromState())
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Erro ao salvar o treino")
+            } finally {
+                _isSaving.value = false
             }
         }
     }

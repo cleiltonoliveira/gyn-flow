@@ -40,6 +40,7 @@ fun WorkoutEditScreen(
     var showDatePicker by remember { mutableStateOf(false) }
 
     val validation by viewModel.validationState.collectAsState()
+    val isSaving by viewModel.isSaving.collectAsState()
 
     LaunchedEffect(workoutId) {
         viewModel.loadWorkout(workoutId)
@@ -50,15 +51,27 @@ fun WorkoutEditScreen(
             TopAppBar(title = { Text("Edit Workout") })
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.updateWorkout(
-                    onSuccess = onWorkoutUpdated,
-                    onError = {
-                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            FloatingActionButton(
+                onClick = {
+                    if (!isSaving) {
+                        viewModel.updateWorkout(
+                            onSuccess = onWorkoutUpdated,
+                            onError = {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            }
+                        )
                     }
-                )
-            }) {
-                Icon(Icons.Default.Check, contentDescription = "Update")
+                }
+            ) {
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Icon(Icons.Default.Check, contentDescription = "Salvar treino")
+                }
             }
         }
     ) { padding ->

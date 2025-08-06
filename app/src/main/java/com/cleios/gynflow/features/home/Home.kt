@@ -40,7 +40,8 @@ fun HomeScreen(
     onAddClick: () -> Unit,
     onWorkoutClick: (Workout) -> Unit
 ) {
-    val workouts = viewModel.workouts
+    val workouts by viewModel.workouts
+    val isLoading by viewModel.isLoading
 
     LaunchedEffect(Unit) {
         viewModel.loadWorkouts()
@@ -69,21 +70,31 @@ fun HomeScreen(
                 onSignOff = { viewModel.logout() }
             )
 
-            if (workouts.value.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        "Nenhum treino ainda. Toque '+' para criar um.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+            when {
+                isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 }
-            } else {
-                LazyColumn(contentPadding = PaddingValues(8.dp)) {
-                    items(workouts.value, key = { it.id }) { workout ->
-                        SwipeToDeleteItem(
-                            workout = workout,
-                            onDelete = { viewModel.removeWorkout(it) },
-                            onClick = { onWorkoutClick(workout) }
+
+                workouts.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            "Nenhum treino ainda. Toque '+' para criar um.",
+                            style = MaterialTheme.typography.bodyMedium
                         )
+                    }
+                }
+
+                else -> {
+                    LazyColumn(contentPadding = PaddingValues(8.dp)) {
+                        items(workouts, key = { it.id }) { workout ->
+                            SwipeToDeleteItem(
+                                workout = workout,
+                                onDelete = { viewModel.removeWorkout(it) },
+                                onClick = { onWorkoutClick(workout) }
+                            )
+                        }
                     }
                 }
             }
