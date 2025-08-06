@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +25,7 @@ import com.cleios.gynflow.core.model.ExerciseInput
 fun WorkoutDetailsScreen(
     workoutId: String,
     viewModel: WorkoutViewModel = hiltViewModel(),
-    onEditClick: (String) -> Unit
+    onEditClick: (String) -> Unit,  onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -37,10 +38,18 @@ fun WorkoutDetailsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Workout Details") },
+                title = { Text("Detalhes do treino") },
                 actions = {
                     IconButton(onClick = { onEditClick(workoutId) }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit Workout")
+                        Icon(Icons.Default.Edit, contentDescription = "Editar treino")
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             )
@@ -60,16 +69,16 @@ fun WorkoutDetailsScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            DetailSection(title = "Description", content = uiState.description)
+            DetailSection(title = "Descrição", content = uiState.description)
             DetailSection(
-                title = "Date",
-                content = uiState.date?.let { dateFormatter.format(it) } ?: "Not selected"
+                title = "Data",
+                content = uiState.date?.let { dateFormatter.format(it) } ?: "Não selecionada"
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                "Exercises",
+                "Exercícios",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -77,7 +86,7 @@ fun WorkoutDetailsScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             if (uiState.exercises.isEmpty()) {
-                Text("No exercises added.", style = MaterialTheme.typography.bodyMedium)
+                Text("Nenhum exercício adicionado.", style = MaterialTheme.typography.bodyMedium)
             } else {
                 uiState.exercises.forEach { exercise ->
                     ReadOnlyExerciseCard(exercise)
@@ -120,7 +129,7 @@ fun ReadOnlyExerciseCard(exercise: ExerciseInput) {
             if (exercise.observations.isNotBlank()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    "Observations",
+                    "Observações",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -134,7 +143,7 @@ fun ReadOnlyExerciseCard(exercise: ExerciseInput) {
                 Spacer(modifier = Modifier.height(12.dp))
                 AsyncImage(
                     model = exercise.imageUrl,
-                    contentDescription = "Exercise Image",
+                    contentDescription = "Imagem do exercício",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.dp),

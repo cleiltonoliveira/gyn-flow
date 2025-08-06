@@ -52,10 +52,10 @@ fun ExerciseCard(
             OutlinedTextField(
                 value = exercise.name,
                 onValueChange = onNameChange,
-                label = { Text("Exercise name") },
+                label = { Text("Nome do exercício") },
                 isError = isNameError,
                 supportingText = {
-                    if (isNameError) Text("Name is required")
+                    if (isNameError) Text("Nome é obrigatório")
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -63,13 +63,13 @@ fun ExerciseCard(
             OutlinedTextField(
                 value = exercise.observations,
                 onValueChange = onObservationChange,
-                label = { Text("Observations") },
+                label = { Text("Observações") },
                 modifier = Modifier.fillMaxWidth()
             )
             if (exercise.localImageUri != null) {
                 AsyncImage(
                     model = exercise.localImageUri,
-                    contentDescription = "Selected Image",
+                    contentDescription = "Imagem selecionada",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
@@ -78,7 +78,7 @@ fun ExerciseCard(
             } else if (exercise.imageUrl != null) {
                 AsyncImage(
                     model = exercise.imageUrl,
-                    contentDescription = "Selected Image",
+                    contentDescription = "Imagem selecionada",
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp)
@@ -89,7 +89,7 @@ fun ExerciseCard(
                 onClick = { launcher.launch("image/*") },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Select Image")
+                Text("Selecionar imagem")
             }
 
             Row(
@@ -99,7 +99,7 @@ fun ExerciseCard(
                 TextButton(onClick = onRemove) {
                     Icon(Icons.Default.Delete, contentDescription = null)
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Remove")
+                    Text("Remover")
                 }
             }
         }

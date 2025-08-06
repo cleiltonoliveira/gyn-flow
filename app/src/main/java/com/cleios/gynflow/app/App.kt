@@ -50,7 +50,8 @@ fun GynFlowApp(
 
         composable("addWorkout") {
             AddWorkoutScreen(
-                onWorkoutSaved = { navController.popBackStack() }
+                onWorkoutSaved = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -58,7 +59,8 @@ fun GynFlowApp(
             val id = backStackEntry.arguments?.getString("id") ?: ""
             WorkoutDetailsScreen(
                 workoutId = id,
-                onEditClick = { id -> navController.navigate("workoutEdit/${id}") }
+                onEditClick = { id -> navController.navigate("workoutEdit/${id}") },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
@@ -66,7 +68,8 @@ fun GynFlowApp(
             val id = backStackEntry.arguments?.getString("id") ?: ""
             WorkoutEditScreen(
                 workoutId = id,
-                onWorkoutUpdated = { navController.popBackStack() }
+                onWorkoutUpdated = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

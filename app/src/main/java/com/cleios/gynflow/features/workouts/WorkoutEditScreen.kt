@@ -24,13 +24,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import android.widget.Toast
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WorkoutEditScreen(
     workoutId: String,
     viewModel: WorkoutViewModel = hiltViewModel(),
-    onWorkoutUpdated: () -> Unit
+    onWorkoutUpdated: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -48,7 +50,14 @@ fun WorkoutEditScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Edit Workout") })
+            TopAppBar(title = { Text("Edit Workout") }, navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            })
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -84,10 +93,10 @@ fun WorkoutEditScreen(
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text("Workout name") },
+                label = { Text("Nome do exercício") },
                 isError = validation.nameError,
                 supportingText = {
-                    if (validation.nameError) Text("Name is required")
+                    if (validation.nameError) Text("Nome é obrigatório")
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -97,9 +106,9 @@ fun WorkoutEditScreen(
                 onValueChange = viewModel::onDescriptionChange,
                 isError = validation.descriptionError,
                 supportingText = {
-                    if (validation.descriptionError) Text("Description is required")
+                    if (validation.descriptionError) Text("Descrição é obrigatória")
                 },
-                label = { Text("Description") },
+                label = { Text("Descrição") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -112,12 +121,12 @@ fun WorkoutEditScreen(
                     containerColor = if (validation.dateError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface
                 )
             ) {
-                Text(uiState.date?.let { "Date: ${dateFormatter.format(it)}" } ?: "Select date")
+                Text(uiState.date?.let { "Data: ${dateFormatter.format(it)}" } ?: "Selecionar data")
             }
 
             if (validation.dateError) {
                 Text(
-                    text = "Date is required",
+                    text = "Data é obrigatória",
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -140,7 +149,7 @@ fun WorkoutEditScreen(
                     },
                     dismissButton = {
                         TextButton(onClick = { showDatePicker = false }) {
-                            Text("Cancel")
+                            Text("Cancelar")
                         }
                     }
                 ) {
@@ -150,7 +159,7 @@ fun WorkoutEditScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Exercises", style = MaterialTheme.typography.titleMedium)
+            Text("Exercícios", style = MaterialTheme.typography.titleMedium)
 
             uiState.exercises.forEachIndexed { index, exercise ->
                 ExerciseCard(
@@ -169,9 +178,9 @@ fun WorkoutEditScreen(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Exercise")
+                Icon(Icons.Default.Add, contentDescription = "Adicionar exercício")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Exercise")
+                Text("Adicionar exercício")
             }
         }
     }

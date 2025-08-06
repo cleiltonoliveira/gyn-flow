@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,6 +22,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -47,7 +50,8 @@ import java.util.Locale
 @Composable
 fun AddWorkoutScreen(
     viewModel: WorkoutViewModel = hiltViewModel(),
-    onWorkoutSaved: () -> Unit
+    onWorkoutSaved: () -> Unit,
+    onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -59,10 +63,19 @@ fun AddWorkoutScreen(
     val validation by viewModel.validationState.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
 
-
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("New Workout") })
+            TopAppBar(
+                title = { Text("Novo treino") },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -98,10 +111,10 @@ fun AddWorkoutScreen(
             OutlinedTextField(
                 value = uiState.name,
                 onValueChange = viewModel::onNameChange,
-                label = { Text("Workout name") },
+                label = { Text("Nome do treino") },
                 isError = validation.nameError,
                 supportingText = {
-                    if (validation.nameError) Text("Name is required")
+                    if (validation.nameError) Text("Nome é obrigatório")
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -109,10 +122,10 @@ fun AddWorkoutScreen(
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = viewModel::onDescriptionChange,
-                label = { Text("Description") },
+                label = { Text("Descrição") },
                 isError = validation.descriptionError,
                 supportingText = {
-                    if (validation.descriptionError) Text("Description is required")
+                    if (validation.descriptionError) Text("Descrição é obrigatória")
                 },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -126,12 +139,12 @@ fun AddWorkoutScreen(
                     containerColor = if (validation.dateError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface
                 )
             ) {
-                Text(uiState.date?.let { "Date: ${dateFormatter.format(it)}" } ?: "Select date")
+                Text(uiState.date?.let { "Data: ${dateFormatter.format(it)}" } ?: "Selecionar data")
             }
 
             if (validation.dateError) {
                 Text(
-                    text = "Date is required",
+                    text = "Data é obrigatória",
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -154,7 +167,7 @@ fun AddWorkoutScreen(
                     },
                     dismissButton = {
                         TextButton(onClick = { showDatePicker = false }) {
-                            Text("Cancel")
+                            Text("Cancelar")
                         }
                     }
                 ) {
@@ -164,7 +177,7 @@ fun AddWorkoutScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Exercises", style = MaterialTheme.typography.titleMedium)
+            Text("Exercícios", style = MaterialTheme.typography.titleMedium)
 
             uiState.exercises.forEachIndexed { index, exercise ->
                 ExerciseCard(
@@ -183,9 +196,9 @@ fun AddWorkoutScreen(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Exercise")
+                Icon(Icons.Default.Add, contentDescription = "Adicionar exercício")
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Add Exercise")
+                Text("Adicionar exercício")
             }
         }
     }
