@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "429032742220",
+    "project_id": "gymflow-35874",
+    "storage_bucket": "gymflow-35874.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429032742220:android:8612849dde15fd045b03e9",
+        "android_client_info": {
+          "package_name": "com.cleios.gynflow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOKeTEupdAIE_Mc9vLYDeMjT1HQlMC838"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
