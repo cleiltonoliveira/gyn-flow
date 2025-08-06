@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cleios.gynflow.features.home.HomeScreen
 import com.cleios.gynflow.features.login.LoginScreen
-import com.cleios.gynflow.features.training.AddWorkoutScreen
+import com.cleios.gynflow.features.workouts.AddWorkoutScreen
 
 @Composable
 fun GynFlowApp(

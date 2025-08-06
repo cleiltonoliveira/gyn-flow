@@ -1,4 +1,4 @@
-package com.cleios.gynflow.features.training
+package com.cleios.gynflow.features.workouts
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
