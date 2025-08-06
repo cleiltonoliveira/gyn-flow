@@ -12,6 +12,7 @@ public class CustomAuthService @Inject constructor(
 ) {
 
     val currentUser: FirebaseUser? get() = auth.currentUser
+    val firebaseAuth: FirebaseAuth? get() = auth
 
     fun login(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
         auth.signInWithEmailAndPassword(email, password)

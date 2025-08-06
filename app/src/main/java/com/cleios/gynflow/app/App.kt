@@ -1,6 +1,9 @@
 package com.cleios.gynflow.app
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -17,7 +20,17 @@ fun GynFlowApp(
     navController: NavHostController = rememberNavController(),
     viewModel: AppViewModel = hiltViewModel()
 ) {
+
+    val isLoggedIn by viewModel.isLoggedIn.collectAsState()
     val startDestination = if (viewModel.isLoggedIn()) "home" else "login"
+
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+            navController.navigate("login") {
+                popUpTo(0) // clear all backstack
+            }
+        }
+    }
 
     NavHost(navController, startDestination = startDestination) {
         composable("login") {
