@@ -1,4 +1,4 @@
-package com.cleios.gynflow.features.home.presentation
+package com.cleios.gynflow.features.home
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background

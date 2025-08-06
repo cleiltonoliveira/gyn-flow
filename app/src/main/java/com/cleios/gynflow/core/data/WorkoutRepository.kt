@@ -26,7 +26,6 @@ class WorkoutRepository @Inject constructor(
             }
     }
 
-
     suspend fun addWorkout(workout: Workout) {
         val user = auth.currentUser
         val path = "users/${user?.uid}/workouts"

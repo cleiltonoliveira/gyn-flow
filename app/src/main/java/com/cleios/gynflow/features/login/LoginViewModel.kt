@@ -1,13 +1,12 @@
-package com.cleios.gynflow.features.login.presentation
+package com.cleios.gynflow.features.login
 
-import com.cleios.gynflow.core.auth.CustomAuthService
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.cleios.gynflow.core.auth.CustomAuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(

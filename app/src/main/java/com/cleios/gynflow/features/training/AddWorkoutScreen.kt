@@ -1,7 +1,6 @@
 package com.cleios.gynflow.features.training
 
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,15 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DatePicker
@@ -42,84 +38,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.cleios.gynflow.core.model.ExerciseInput
-import com.cleios.gynflow.core.model.Workout
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun AddWorkoutScreen(
-//    viewModel: WorkoutViewModel = hiltViewModel(),
-//    onSave: () -> Unit
-//) {
-//    var workoutName by remember { mutableStateOf("") }
-//    var workoutDescription by remember { mutableStateOf("") }
-//
-//    var exercises by remember { mutableStateOf(mutableListOf<Exercise>()) }
-//
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(title = { Text("Novo Treino") })
-//        },
-//    ) { paddingValues ->
-//        Column(modifier = Modifier.padding(paddingValues)) {
-//            Text("Add Workout", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-//
-//            OutlinedTextField(
-//                value = workoutName,
-//                onValueChange = { workoutName = it },
-//                label = { Text("Workout Name") }
-//            )
-//
-//            OutlinedTextField(
-//                value = workoutDescription,
-//                onValueChange = { workoutDescription = it },
-//                label = { Text("Workout Description") }
-//            )
-//
-//            Spacer(Modifier.height(16.dp))
-//            Text("Exercises", fontWeight = FontWeight.Bold)
-//
-//            exercises.forEachIndexed { index, exercise ->
-//                Card(Modifier.padding(vertical = 4.dp)) {
-//                    Column(Modifier.padding(8.dp)) {
-//                        Text("Exercise ${index + 1}: ${exercise.name}")
-//                        Text("Notes: ${exercise.notes}")
-//                    }
-//                }
-//            }
-//
-//            Button(onClick = {
-//                exercises.add(Exercise(name = "", notes = ""))
-//            }) {
-//                Text("Add Exercise")
-//            }
-//
-//            Button(
-//                onClick = {
-//                    val workout = Workout(
-//                        name = workoutName,
-//                        description = workoutDescription,
-//                        exercises = exercises
-//                    )
-//                    viewModel.saveWorkout(workout)
-//                    onSave()
-//                },
-//                modifier = Modifier.padding(top = 16.dp)
-//            ) {
-//                Text("Save Workout")
-//            }
-//        }
-//
-//
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -221,7 +145,9 @@ fun AddWorkoutScreen(
 
             OutlinedButton(
                 onClick = { viewModel.addExercise() },
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Exercise")
                 Spacer(modifier = Modifier.width(8.dp))
