@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,6 +41,7 @@ fun LoginScreen(
     var isRegisterMode by remember { mutableStateOf(false) }
 
     val error = viewModel.errorMessage
+    val isLoading = viewModel.isLoading
 
     Column(
         modifier = Modifier
@@ -47,6 +50,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -113,7 +117,15 @@ fun LoginScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(if (isRegisterMode) "Criar Conta" else "Entrar")
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(if (isRegisterMode) "Criar Conta" else "Entrar")
+                    }
                 }
 
                 TextButton(
@@ -127,6 +139,7 @@ fun LoginScreen(
                         text = if (isRegisterMode) "Já tem uma conta? Entrar" else "Criar uma conta"
                     )
                 }
+
             }
         }
     }
