@@ -1,51 +1,36 @@
 package com.cleios.gynflow.features.workouts
 
-import android.widget.Toast
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-
+import java.util.*
+import android.widget.Toast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddWorkoutScreen(
+fun WorkoutEditScreen(
+    workoutId: String,
     viewModel: WorkoutViewModel = hiltViewModel(),
-    onWorkoutSaved: () -> Unit
+    onWorkoutUpdated: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -56,21 +41,24 @@ fun AddWorkoutScreen(
 
     val validation by viewModel.validationState.collectAsState()
 
+    LaunchedEffect(workoutId) {
+        viewModel.loadWorkout(workoutId)
+    }
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("New Workout") })
+            TopAppBar(title = { Text("Edit Workout") })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                viewModel.saveWorkout(
-                    onSuccess = onWorkoutSaved,
+                viewModel.updateWorkout(
+                    onSuccess = onWorkoutUpdated,
                     onError = {
                         Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                     }
                 )
             }) {
-                Icon(Icons.Default.Check, contentDescription = "Save")
+                Icon(Icons.Default.Check, contentDescription = "Update")
             }
         }
     ) { padding ->
@@ -94,11 +82,11 @@ fun AddWorkoutScreen(
             OutlinedTextField(
                 value = uiState.description,
                 onValueChange = viewModel::onDescriptionChange,
-                label = { Text("Description") },
                 isError = validation.descriptionError,
                 supportingText = {
                     if (validation.descriptionError) Text("Description is required")
                 },
+                label = { Text("Description") },
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -175,4 +163,3 @@ fun AddWorkoutScreen(
         }
     }
 }
-

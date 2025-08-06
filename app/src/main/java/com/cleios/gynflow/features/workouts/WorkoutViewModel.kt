@@ -22,6 +22,10 @@ class WorkoutViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(Workout())
     val uiState: StateFlow<Workout> = _uiState.asStateFlow()
 
+    private val _validationState = MutableStateFlow(WorkoutFormValidation())
+    val validationState: StateFlow<WorkoutFormValidation> = _validationState.asStateFlow()
+
+
     fun onNameChange(value: String) {
         _uiState.update { it.copy(name = value) }
     }
@@ -64,14 +68,6 @@ class WorkoutViewModel @Inject constructor(
         }
     }
 
-    fun onExerciseImageUrlChange(index: Int, value: String) {
-        val updatedExercises = _uiState.value.exercises.toMutableList()
-        if (index in updatedExercises.indices) {
-            updatedExercises[index] = updatedExercises[index].copy(imageUrl = value)
-            _uiState.update { it.copy(exercises = updatedExercises) }
-        }
-    }
-
     fun onExerciseImageSelected(index: Int, uri: Uri) {
         val updated = _uiState.value.exercises.toMutableList()
         if (index in updated.indices) {
@@ -82,19 +78,68 @@ class WorkoutViewModel @Inject constructor(
 
     fun saveWorkout(onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
+            if (!validateForm()) return@launch
             try {
-                repository.addWorkout(
-                    Workout(
-                        name = _uiState.value.name,
-                        description = _uiState.value.description,
-                        date = _uiState.value.date,
-                        exercises = _uiState.value.exercises
-                    )
-                )
+                repository.addWorkout(buildWorkoutFromState())
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Erro ao salvar o treino")
             }
         }
     }
+
+    fun loadWorkout(id: String) {
+        viewModelScope.launch {
+            repository.getWorkoutById(id) { workout ->
+                _uiState.update {
+                    it.copy(
+                        id = workout?.id ?: "",
+                        name = workout?.name ?: "",
+                        description = workout?.description ?: "",
+                        date = workout?.date,
+                        exercises = workout?.exercises ?: emptyList()
+                    )
+                }
+            }
+        }
+    }
+
+    fun updateWorkout(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            if (!validateForm()) return@launch
+            try {
+                repository.updateWorkout(buildWorkoutFromState())
+                onSuccess()
+            } catch (e: Exception) {
+                onError(e.message ?: "Erro ao salvar o treino")
+            }
+        }
+    }
+
+    fun buildWorkoutFromState(): Workout {
+        return Workout(
+            id = _uiState.value.id,
+            name = _uiState.value.name,
+            description = _uiState.value.description,
+            date = _uiState.value.date,
+            exercises = _uiState.value.exercises
+        )
+    }
+
+    private fun validateForm(): Boolean {
+        val nameError = _uiState.value.name.isBlank()
+        val descriptionError = _uiState.value.description.isBlank()
+        val dateError = _uiState.value.date == null
+        val exerciseErrors = _uiState.value.exercises.map { it.name.isBlank() }
+
+        _validationState.value = WorkoutFormValidation(
+            nameError = nameError,
+            descriptionError = descriptionError,
+            dateError = dateError,
+            exerciseErrors = exerciseErrors
+        )
+
+        return !nameError && !descriptionError && !dateError && exerciseErrors.all { !it }
+    }
 }
+

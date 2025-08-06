@@ -9,6 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import com.cleios.gynflow.features.home.HomeScreen
 import com.cleios.gynflow.features.login.LoginScreen
 import com.cleios.gynflow.features.workouts.AddWorkoutScreen
+import com.cleios.gynflow.features.workouts.WorkoutDetailsScreen
+import com.cleios.gynflow.features.workouts.WorkoutEditScreen
 
 @Composable
 fun GynFlowApp(
@@ -23,19 +25,36 @@ fun GynFlowApp(
                 onLoginSuccess = { navController.navigate("home") },
             )
         }
+
         composable("home") {
             HomeScreen(
-                onWorkoutClick = { treino ->
-                    navController.navigate("treino/${treino.id}")
+                onWorkoutClick = { workout ->
+                    navController.navigate("workoutDetails/${workout.id}")
                 },
                 onAddClick = { navController.navigate("addWorkout") },
             )
         }
+
         composable("addWorkout") {
             AddWorkoutScreen(
                 onWorkoutSaved = { navController.popBackStack() }
             )
         }
-    }
 
+        composable("workoutDetails/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            WorkoutDetailsScreen(
+                workoutId = id,
+                onEditClick = { id -> navController.navigate("workoutEdit/${id}") }
+            )
+        }
+
+        composable("workoutEdit/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id") ?: ""
+            WorkoutEditScreen(
+                workoutId = id,
+                onWorkoutUpdated = { navController.popBackStack() }
+            )
+        }
+    }
 }

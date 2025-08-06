@@ -4,7 +4,7 @@ import android.net.Uri
 
 data class ExerciseInput(
     val name: String = "",
-    val imageUrl: String = "",
+    val imageUrl: String? = null,
     val localImageUri: Uri? = null,
     val observations: String = ""
 )

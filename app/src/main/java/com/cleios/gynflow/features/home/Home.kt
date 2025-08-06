@@ -19,14 +19,18 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,25 +47,44 @@ fun HomeScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Meus Treinos") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Meus Treinos") }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddClick) {
                 Icon(Icons.Default.Add, contentDescription = "Novo treino")
             }
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
             UserHeader(
                 userName = viewModel.user?.email.orEmpty(),
                 onSignOff = { viewModel.logout() }
             )
-            LazyColumn {
-                items(workouts.value, key = { it.id }) { workout ->
-                    SwipeToDeleteItem(
-                        workout = workout,
-                        onDelete = { viewModel.removeWorkout(it) },
-                        onClick = { onWorkoutClick(workout) }
+
+            if (workouts.value.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        "Nenhum treino ainda. Toque '+' para criar um.",
+                        style = MaterialTheme.typography.bodyMedium
                     )
+                }
+            } else {
+                LazyColumn(contentPadding = PaddingValues(8.dp)) {
+                    items(workouts.value, key = { it.id }) { workout ->
+                        SwipeToDeleteItem(
+                            workout = workout,
+                            onDelete = { viewModel.removeWorkout(it) },
+                            onClick = { onWorkoutClick(workout) }
+                        )
+                    }
                 }
             }
         }
@@ -74,30 +97,36 @@ fun SwipeToDeleteItem(
     onDelete: (Workout) -> Unit,
     onClick: () -> Unit
 ) {
-    val swipeThreshold = 150f
+    val swipeThreshold = 120f
     var offsetX by remember { mutableFloatStateOf(0f) }
     val animatedOffsetX by animateFloatAsState(targetValue = offsetX, label = "")
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.errorContainer)
+            .padding(vertical = 4.dp)
             .height(IntrinsicSize.Min)
     ) {
-        // Background Delete Icon
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = "Delete",
-            tint = MaterialTheme.colorScheme.onErrorContainer,
+        Box(
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 24.dp)
-        )
+                .matchParentSize()
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.errorContainer)
+                .padding(end = 24.dp),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete",
+                tint = MaterialTheme.colorScheme.onErrorContainer
+            )
+        }
+
         Card(
             modifier = Modifier
                 .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
                 .fillMaxWidth()
-                .padding(8.dp)
+                .clip(RoundedCornerShape(16.dp))
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures(
                         onDragEnd = {
@@ -114,15 +143,32 @@ fun SwipeToDeleteItem(
                     )
                 }
                 .clickable { onClick() },
-            elevation = CardDefaults.cardElevation()
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            Column(Modifier.padding(16.dp)) {
-                Text(workout.name, fontWeight = FontWeight.Bold)
-                Text(workout.description)
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = workout.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = workout.description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = workout.date?.let {
+                        "📅 ${SimpleDateFormat("dd MMM yyyy", Locale.getDefault()).format(it)}"
+                    } ?: "Sem data",
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }
 }
-
-
 

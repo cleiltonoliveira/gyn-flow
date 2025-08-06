@@ -62,4 +62,37 @@ class WorkoutRepository @Inject constructor(
         db.collection(path).document(workoutId).delete().await()
     }
 
+    suspend fun updateWorkout(workout: Workout) {
+        val user = auth.currentUser ?: return
+        val path = "users/${user.uid}/workouts"
+
+        val updatedExercises = workout.exercises.map { exercise ->
+            val uri = exercise.localImageUri
+            val uploadedUrl = uri?.let { uploadImageToFirebase(it) } ?: exercise.imageUrl
+            exercise.copy(imageUrl = uploadedUrl, localImageUri = null)
+        }
+
+        val workoutWithUploadedImages = workout.copy(exercises = updatedExercises)
+        db.collection(path).document(workout.id).set(workoutWithUploadedImages).await()
+    }
+
+    suspend fun getWorkoutById(id: String, onResult: (Workout?) -> Unit) {
+        val user = auth.currentUser ?: return
+        val path = "users/${user.uid}/workouts/$id"
+
+        db.document(path)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val workout = document.toObject(Workout::class.java)?.copy(id = document.id)
+                    if (workout != null) {
+                        onResult(workout)
+                    } else {
+                        onResult(null)
+                    }
+                } else {
+                    onResult(null)
+                }
+            }
+    }
 }
