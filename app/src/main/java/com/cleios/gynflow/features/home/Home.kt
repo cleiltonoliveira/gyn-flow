@@ -13,7 +13,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
 import com.cleios.gynflow.core.model.Workout
-import com.cleios.gynflow.features.training.WorkoutViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -33,11 +32,11 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: WorkoutViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     onAddClick: () -> Unit,
     onWorkoutClick: (Workout) -> Unit
 ) {
-    val workouts = viewModel.treinos
+    val workouts = viewModel.workouts
 
     LaunchedEffect(Unit) {
         viewModel.loadWorkouts()
@@ -52,13 +51,15 @@ fun HomeScreen(
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            UserHeader(userName = "Cleilton Souza", onSignOff = { })
-
+            UserHeader(
+                userName = viewModel.user?.email.orEmpty(),
+                onSignOff = { viewModel.logout() }
+            )
             LazyColumn {
                 items(workouts.value, key = { it.id }) { workout ->
                     SwipeToDeleteItem(
                         workout = workout,
-                        onDelete = { viewModel.removerTreino(it) },
+                        onDelete = { viewModel.removeWorkout(it) },
                         onClick = { onWorkoutClick(workout) }
                     )
                 }

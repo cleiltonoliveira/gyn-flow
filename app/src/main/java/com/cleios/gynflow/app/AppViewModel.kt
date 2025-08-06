@@ -7,15 +7,9 @@ import javax.inject.Inject
 import com.google.firebase.auth.FirebaseUser
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(
+class AppViewModel @Inject constructor(
     private val authService: CustomAuthService
 ) : ViewModel() {
 
-    fun isLoggedIn(): Boolean = authService.currentUser!= null
-    fun logout(){
-        authService.logout()
-    }
-    val user: FirebaseUser?
-        get() = authService.currentUser
-
+    fun isLoggedIn(): Boolean = authService.currentUser != null
 }

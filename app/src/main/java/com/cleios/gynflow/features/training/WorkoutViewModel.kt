@@ -22,46 +22,8 @@ import javax.inject.Inject
 class WorkoutViewModel @Inject constructor(
     private val repository: WorkoutRepository
 ) : ViewModel() {
-
-    var name by mutableStateOf("")
-    var description by mutableStateOf("")
-
-    var isSaving by mutableStateOf(false)
-    var saveSuccess by mutableStateOf<Boolean?>(null)
-
-    fun saveWorkout(workout: Workout) {
-        viewModelScope.launch {
-            isSaving = true
-            try {
-                repository.addWorkout(workout)
-                saveSuccess = true
-            } catch (e: Exception) {
-                saveSuccess = false
-            }
-            isSaving = false
-        }
-    }
-
-    fun removerTreino(treino: Workout) {
-        viewModelScope.launch {
-            repository.deleteWorkout(treino.id)
-            loadWorkouts()
-        }
-    }
-
-    private val _treinos = mutableStateOf<List<Workout>>(emptyList())
-    val treinos: State<List<Workout>> get() = _treinos
-
-    fun loadWorkouts() {
-        repository.getWorkouts {
-            _treinos.value = it
-        }
-    }
-
-
     private val _uiState = MutableStateFlow(Workout())
     val uiState: StateFlow<Workout> = _uiState.asStateFlow()
-
 
     fun onNameChange(value: String) {
         _uiState.update { it.copy(name = value) }
@@ -114,9 +76,7 @@ class WorkoutViewModel @Inject constructor(
     }
 
     fun saveWorkout(onSuccess: () -> Unit, onError: (String) -> Unit) {
-
         viewModelScope.launch {
-            isSaving = true
             try {
                 repository.addWorkout(
                     Workout(
@@ -131,7 +91,5 @@ class WorkoutViewModel @Inject constructor(
                 onError(e.message ?: "Erro ao salvar o treino")
             }
         }
-
     }
-
 }

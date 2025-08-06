@@ -13,7 +13,7 @@ import com.cleios.gynflow.features.training.AddWorkoutScreen
 @Composable
 fun GynFlowApp(
     navController: NavHostController = rememberNavController(),
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AppViewModel = hiltViewModel()
 ) {
     val startDestination = if (viewModel.isLoggedIn()) "home" else "login"
 
